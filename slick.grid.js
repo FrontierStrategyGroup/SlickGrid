@@ -130,7 +130,7 @@ if (typeof Slick === "undefined") {
 		var $focusSink, $focusSink2;
 		var $headerScroller;
 		var $headers;
-		var $headerRow, $headerRowScroller, $headerRowSpacerL, $headerRowSpacerR, $spanHeaders;
+		var $headerRow, $headerRowScroller, $headerRowSpacerL, $headerRowSpacerR;
 		var $topPanelScroller;
 		var $topPanel;
 		var $viewport;
@@ -907,10 +907,10 @@ if (typeof Slick === "undefined") {
 		//Method used to create Spanned header row
         function createSpanHeaderRow() {
             if (!headerGrouping) {
-                 $spanHeaders.remove();
+                 $headerL.remove();
                  return;
             }
-            $spanHeaders.empty();
+            $headerL.empty();
             //$headers.width(getHeadersWidth());
             for (var i = 0; i < spanColumns.length; i++) {
                  var oneColumn = spanColumns[i];
@@ -930,10 +930,10 @@ if (typeof Slick === "undefined") {
                   .attr("title", oneColumn.toolTip || "")
                   .data("column", oneColumn)
                   .addClass(oneColumn.headerCssClass || "")
-                  .appendTo($spanHeaders);
+                  .appendTo($headerL);
             }
 
-            $($spanHeaders).width($($headers).width());
+            $($headerL).width($($headers).width());
         }
 
 		function setupColumnSort() {
@@ -1228,7 +1228,6 @@ if (typeof Slick === "undefined") {
 							}
 						} else { // stretch column
 							x = d;
-
 							var newCanvasWidthL = 0, newCanvasWidthR = 0;
 
 							for (j = i; j >= 0; j--) {
