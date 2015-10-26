@@ -4,21 +4,13 @@
  * michael{dot}leibman{at}gmail{dot}com
  * http://github.com/mleibman/slickgrid
  *
- * (c) 2015 Frontier Strategy Group
- * Last Edited by: Victor L. Almeida
- * https://github.com/Termato/SlickGrid
- *
  * Distributed under MIT license.
  * All rights reserved.
  *
- * SlickGrid v2.3 
- * branched from Michael Leibman's SlickGrid v2.2
+ * SlickGrid v2.3
  *
  * NOTES:
- *     Cell/row DOM manipulations are done directly bypassing jQuery's DOM manipulation methods.
- *     This increases the speed dramatically, but can only be done safely because there are no event handlers
- *     or data associated with any cell/row DOM nodes.  Cell editors must make sure they implement .destroy()
- *     and do proper cleanup.
+ *     Combined Header Grouping and Frozen Header rows into old master branch.
  *
  * TODO: Scroll the viewport during column reorder
  * TODO: Fix unit test issue
