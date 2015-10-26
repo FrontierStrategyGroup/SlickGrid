@@ -942,7 +942,7 @@ if (typeof Slick === "undefined") {
 
 			var headerLeft = $("<div class='ui-state-default slick-header-column' id='" + uid + "-leftHeader' />")
 				  .html("<span class='slick-column-name'></span>")
-				  .width($($($headerL).children().get(1)).width())
+				  .width($($headerL).children().width())
 				  .addClass(oneColumn.headerCssClass || "")
 				  .appendTo($spanHeadersL);
 
