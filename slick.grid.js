@@ -320,11 +320,13 @@ if (typeof Slick === "undefined") {
 			$headerScroller = $().add($headerScrollerL).add($headerScrollerR);
 
 			// Append the columnn containers to the headers
+			$spanHeaders = $("<div class='slick-header-columns slick-header-columns-right' style='left:-1000px' />").appendTo($headerScrollerR);
 			$headerL = $("<div class='slick-header-columns slick-header-columns-left' style='left:-1000px' />").appendTo($headerScrollerL);
 			$headerR = $("<div class='slick-header-columns slick-header-columns-right' style='left:-1000px' />").appendTo($headerScrollerR);
 
 			// Cache the header columns
 			$headers = $().add($headerL).add($headerR);
+			$headers.width(getHeadersWidth());
 
 			$headerRowScrollerL = $("<div class='ui-state-default slick-headerrow' />").appendTo($paneTopL);
 			$headerRowScrollerR = $("<div class='ui-state-default slick-headerrow' />").appendTo($paneTopR);
@@ -907,11 +909,11 @@ if (typeof Slick === "undefined") {
 		//Method used to create Spanned header row
 		function createSpanHeaderRow() {
 			if (!headerGrouping) {
-				 $headerL.remove();
+				 $spanHeaders.remove();
 				 return;
 			}
-			$headerL.empty();
-			//$headers.width(getHeadersWidth());
+			$spanHeaders.empty();
+
 			for (var i = 0; i < spanColumns.length; i++) {
 				 var oneColumn = spanColumns[i];
 				 var index = oneColumn.startIndex;
@@ -930,10 +932,10 @@ if (typeof Slick === "undefined") {
 				  .attr("title", oneColumn.toolTip || "")
 				  .data("column", oneColumn)
 				  .addClass(oneColumn.headerCssClass || "")
-				  .appendTo($headerL);
+				  .appendTo($spanHeaders);
 			}
 
-			$($headerL).width($($headerR).width());
+			$($spanHeaders).width($($headerR).width());
 		}
 
 		function setupColumnSort() {
@@ -1031,6 +1033,7 @@ if (typeof Slick === "undefined") {
 				tolerance: "intersection",
 				helper: "clone",
 				placeholder: "slick-sortable-placeholder ui-state-default slick-header-column",
+				forcePlaceholderSize: true,
 				start: function (e, ui) {
 					ui.placeholder.width(ui.helper.outerWidth() - headerColumnWidthDiff);
 					$(ui.helper).addClass("slick-header-column-active");
@@ -1935,11 +1938,10 @@ if (typeof Slick === "undefined") {
 		}
 
 		function defaultFormatter(row, cell, value, columnDef, dataContext) {
-			if (value == null) {
+			if (value === null)
 				return "";
-			} else {
+			else
 				return (value + "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-			}
 		}
 
 		function getFormatter(row, column) {
@@ -1981,6 +1983,9 @@ if (typeof Slick === "undefined") {
 				(row === activeRow ? " active" : "") +
 				(row % 2 == 1 ? " odd" : " even");
 
+			if (!d)
+				rowCss += " " + options.addNewRowCssClass;
+
 			var metadata = data.getItemMetadata && data.getItemMetadata(row);
 
 			if (metadata && metadata.cssClasses) {
@@ -1990,7 +1995,7 @@ if (typeof Slick === "undefined") {
 			var frozenRowOffset = getFrozenRowOffset(row);
 
 			var rowHtml = "<div class='ui-widget-content " + rowCss + "' style='top:"
-				+ (getRowTop(row) - frozenRowOffset )
+				+ (getRowTop(row) - frozenRowOffset)
 				+ "px'>";
 
 			stringArrayL.push(rowHtml);
@@ -2222,15 +2227,10 @@ if (typeof Slick === "undefined") {
 		}
 
 		function resizeCanvas() {
-			if (!initialized) {
+			if (!initialized)
 				return;
-			}
 
-			paneTopH = 0
-			paneBottomH = 0
-			viewportTopH = 0
-			viewportBottomH = 0;
-
+			paneTopH = paneBottomH = viewportTopH = viewportBottomH = 0;
 			getViewportWidth();
 			getViewportHeight();
 
@@ -2251,9 +2251,8 @@ if (typeof Slick === "undefined") {
 			// The top pane includes the top panel and the header row
 			paneTopH += topPanelH + headerRowH;
 
-			if (options.frozenColumn > -1 && options.autoHeight) {
+			if (options.frozenColumn > -1 && options.autoHeight)
 				paneTopH += scrollbarDimensions.height;
-			}
 
 			// The top viewport does not contain the top panel or header row
 			viewportTopH = paneTopH - topPanelH - headerRowH
@@ -2261,8 +2260,7 @@ if (typeof Slick === "undefined") {
 			if (options.autoHeight) {
 				if (options.frozenColumn > -1) {
 					$container.height(
-						paneTopH
-							+ parseFloat($.css($headerScrollerL[0], "height"))
+						paneTopH + parseFloat($.css($headerScrollerL[0], "height"))
 					);
 				}
 
@@ -2273,9 +2271,7 @@ if (typeof Slick === "undefined") {
 				'top': $paneHeaderL.height(), 'height': paneTopH
 			});
 
-			var paneBottomTop = $paneTopL.position().top
-				+ paneTopH;
-
+			var paneBottomTop = $paneTopL.position().top + paneTopH;
 			$viewportTopL.height(viewportTopH);
 
 			if (options.frozenColumn > -1) {
@@ -2312,23 +2308,20 @@ if (typeof Slick === "undefined") {
 				if (options.frozenBottom) {
 					$canvasBottomL.height(frozenRowsHeight);
 
-					if (options.frozenColumn > -1) {
+					if (options.frozenColumn > -1)
 						$canvasBottomR.height(frozenRowsHeight);
-					}
 				} else {
 					$canvasTopL.height(frozenRowsHeight);
 
-					if (options.frozenColumn > -1) {
+					if (options.frozenColumn > -1)
 						$canvasTopR.height(frozenRowsHeight);
-					}
 				}
 			} else {
 				$viewportTopR.height(viewportTopH);
 			}
 
-			if (options.forceFitColumns) {
+			if (options.forceFitColumns)
 				autosizeColumns();
-			}
 
 			updateRowCount();
 			handleScroll();
@@ -2356,6 +2349,7 @@ if (typeof Slick === "undefined") {
 			var oldViewportHasVScroll = viewportHasVScroll;
 			// with autoHeight, we do not need to accommodate the vertical scroll bar
 			viewportHasVScroll = !options.autoHeight && (numberOfRows * options.rowHeight > tempViewportH);
+			makeActiveCellNormal();
 
 			// remove the rows that are now outside of the data range
 			// this helps avoid redundant calls to .removeRow() when the size of
@@ -3453,18 +3447,15 @@ if (typeof Slick === "undefined") {
 
 		function isCellPotentiallyEditable(row, cell) {
 			var dataLength = getDataLength();
-			// is the data for this row loaded?
-			if (row < dataLength && !getDataItem(row)) {
+			if (row < dataLength && !getDataItem(row)) { // is the data for this row loaded?
 				return false;
 			}
 
-			// are we in the Add New row? can we create new from this cell?
-			if (columns[cell].cannotTriggerInsert && row >= dataLength) {
+			if (columns[cell].cannotTriggerInsert && row >= dataLength) { // are we in the Add New row? can we create new from this cell?
 				return false;
 			}
 
-			// does this cell have an editor?
-			if (!getEditor(row, cell)) {
+			if (!getEditor(row, cell)) { // does this cell have an editor?
 				return false;
 			}
 
@@ -3492,8 +3483,7 @@ if (typeof Slick === "undefined") {
 				}
 			}
 
-			// if there previously was text selected on a page (such as selected
-			// text in the edit cell just removed),
+			// if there previously was text selected on a page (such as selected text in the edit cell just removed),
 			// IE can't set focus to anything else correctly
 			if (navigator.userAgent.toLowerCase().match(/msie/)) {
 				clearTextSelection();
