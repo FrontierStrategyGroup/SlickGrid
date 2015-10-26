@@ -130,7 +130,7 @@ if (typeof Slick === "undefined") {
 		var $focusSink, $focusSink2;
 		var $headerScroller;
 		var $headers;
-		var $headerRow, $headerRowScroller, $headerRowSpacerL, $headerRowSpacerR;
+		var $headerRow, $headerRowScroller, $headerRowSpacerL, $headerRowSpacerR, $spanHeadersR, $spanHeadersL;
 		var $topPanelScroller;
 		var $topPanel;
 		var $viewport;
@@ -320,8 +320,9 @@ if (typeof Slick === "undefined") {
 			$headerScroller = $().add($headerScrollerL).add($headerScrollerR);
 
 			// Append the columnn containers to the headers
-			$spanHeaders = $("<div class='slick-header-columns slick-header-columns-right' style='left:-1000px' />").appendTo($headerScrollerR);
+			$spanHeadersL = $("<div class='slick-header-columns slick-header-columns-left' style='left:-1000px' />").appendTo($headerScrollerL);
 			$headerL = $("<div class='slick-header-columns slick-header-columns-left' style='left:-1000px' />").appendTo($headerScrollerL);
+			$spanHeadersR = $("<div class='slick-header-columns slick-header-columns-right' style='left:-1000px' />").appendTo($headerScrollerR);
 			$headerR = $("<div class='slick-header-columns slick-header-columns-right' style='left:-1000px' />").appendTo($headerScrollerR);
 
 			// Cache the header columns
@@ -857,7 +858,6 @@ if (typeof Slick === "undefined") {
 			
 			for (var i = 0; i < columns.length; i++) {
 				var m = columns[i];
-
 				var $headerTarget = (options.frozenColumn > -1) ? ((i <= options.frozenColumn) ? $headerL : $headerR) : $headerL;
 				var $headerRowTarget = (options.frozenColumn > -1) ? ((i <= options.frozenColumn) ? $headerRowL : $headerRowR) : $headerRowL;
 
@@ -909,33 +909,45 @@ if (typeof Slick === "undefined") {
 		//Method used to create Spanned header row
 		function createSpanHeaderRow() {
 			if (!headerGrouping) {
-				 $spanHeaders.remove();
-				 return;
+				$spanHeadersL.remove();
+				$spanHeadersR.remove();
+				return;
 			}
-			$spanHeaders.empty();
+			$spanHeadersL.empty();
+			$spanHeadersR.empty();
 
 			for (var i = 0; i < spanColumns.length; i++) {
 				 var oneColumn = spanColumns[i];
 				 var index = oneColumn.startIndex;
 				 var width = 0;
-				 do {
-					  width += $($($headerR).children().get(index)).width();
+
+			 	do {
+					  width += $($($headerR).children().get(index - 1)).width();
 					  index++;
 				 } while (index <= oneColumn.endIndex);
 
 				 if (oneColumn.addColumWidthDiff)
 					  width += headerColumnWidthDiff;
 
-				 var header = $("<div class='ui-state-default slick-header-column' id='" + uid + oneColumn.id + "' />")
-				  .html("<span class='slick-column-name'>" + oneColumn.name + "</span>")
-				  .width(width)
-				  .attr("title", oneColumn.toolTip || "")
-				  .data("column", oneColumn)
-				  .addClass(oneColumn.headerCssClass || "")
-				  .appendTo($spanHeaders);
+				 if (oneColumn.name && oneColumn.startIndex && oneColumn.endIndex) {
+					 var header = $("<div class='ui-state-default slick-header-column' id='" + uid + oneColumn.id + "' />")
+					  .html("<span class='slick-column-name'>" + oneColumn.name + "</span>")
+					  .width(width)
+					  .attr("title", oneColumn.toolTip || "")
+					  .data("column", oneColumn)
+					  .addClass(oneColumn.headerCssClass || "")
+					  .appendTo($spanHeadersR);
+				 }
 			}
 
-			$($spanHeaders).width($($headerR).width());
+			var headerLeft = $("<div class='ui-state-default slick-header-column' id='" + uid + "-leftHeader' />")
+				  .html("<span class='slick-column-name'></span>")
+				  .width($($($headerL).children().get(1)).width())
+				  .addClass(oneColumn.headerCssClass || "")
+				  .appendTo($spanHeadersL);
+
+			$($spanHeadersR).width($($headerR).width());
+			$($spanHeadersL).width($($headerL).width());
 		}
 
 		function setupColumnSort() {
